@@ -104,12 +104,12 @@
             var increase = bill * 0.18715;
             var communitySavings = bill * 0.15;
             var onsiteSavings = bill - 5;
-            var demandResponse = bill/(1000*.18) * 3*5*1.25;
+            var demandResponse = bill/(1000*.18) * 3*5*1.25/12;
 
             document.getElementById('billIncrease').textContent = `Your electric bill is projected to increase $${increase.toFixed(2)} per month.`;
             document.getElementById('communitySolarSavings').textContent = `Community solar can save you $${communitySavings.toFixed(2)} per month.`;
             document.getElementById('onsiteSolarSavings').textContent = `Onsite solar can save you $${onsiteSavings.toFixed(2)} per month.`;
-            document.getElementById('demandResponse').textContent = 'Trimming peak usage on 5 days each year can save you $$(demandResopnse.toFixed(2)} per month.';
+            document.getElementById('demandResponse').textContent = 'Shifting usage on five days each year can save you $$(demandResponse.toFixed(2)} per month.';
 
             document.getElementById('results').style.display = 'block';
         }
