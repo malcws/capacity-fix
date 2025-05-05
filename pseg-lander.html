@@ -101,15 +101,15 @@
                 return;
             }
 
-            var increase = bill * 0.18715;
-            var communitySavings = bill * 0.15;
-            var onsiteSavings = bill - 5;
-            var demandResponse = bill/(1000*.18) * (50+200)/2 /12;
+            var increase = bill * 0.18715*12;
+            var communitySavings = bill * 0.15*12;
+            var onsiteSavings = (bill - 5)*12;
+            var demandResponse = bill/(1000*.18) * (50+200)/2;
 
-            document.getElementById('billIncrease').textContent = `Your electric bill is projected to increase $${increase.toFixed(2)} per month.`;
-            document.getElementById('communitySolarSavings').textContent = `Community solar can save you $${communitySavings.toFixed(2)} per month.`;
-            document.getElementById('onsiteSolarSavings').textContent = `Onsite solar can save you $${onsiteSavings.toFixed(2)} per month.`;
-            document.getElementById('demandResponse').textContent = `Shifting usage on five days each year can save you $${demandResponse.toFixed(2)} per month.`;
+            document.getElementById('billIncrease').textContent = `Your electric bill is projected to increase $${increase.toFixed(2)} per year.`;
+            document.getElementById('communitySolarSavings').textContent = `Community solar can save you $${communitySavings.toFixed(2)} per year.`;
+            document.getElementById('onsiteSolarSavings').textContent = `Onsite solar can save you $${onsiteSavings.toFixed(2)} per year.`;
+            document.getElementById('demandResponse').textContent = `Reducing usage on five afternoons each summer can save you $${demandResponse.toFixed(2)} per year.`;
 
             document.getElementById('results').style.display = 'block';
         }
