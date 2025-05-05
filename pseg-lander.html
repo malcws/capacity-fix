@@ -75,7 +75,7 @@
     <button onclick="calculateSavings()">OK</button>
 
     <div class="results" id="results">
-        <div class="result-line" id="billIncrease"></div>
+        <div style="color: red;" class="result-line" id="billIncrease"></div>
         <div class="result-line" id="communitySolarSavings"></div>
         <div class="result-line" id="onsiteSolarSavings"></div>
         <div class="result-line" id="demandResponse"></div>
@@ -107,7 +107,7 @@
             var demandResponse = bill/(1000*.18) * (50+200)/2;
 
             
-            document.getElementById('billIncrease').textContent = `<p style="color: red;">Your electric bill is projected to increase $${increase.toFixed(2)} per year.</p>`;
+            document.getElementById('billIncrease').textContent = `Your electric bill is projected to increase $${increase.toFixed(2)} per year.`;
             document.getElementById('communitySolarSavings').textContent = `Community solar can save you $${communitySavings.toFixed(2)} per year.`;
             document.getElementById('onsiteSolarSavings').textContent = `Onsite solar can save you $${onsiteSavings.toFixed(2)} per year.`;
             document.getElementById('demandResponse').textContent = `Reducing usage on five afternoons each summer can save you $${demandResponse.toFixed(2)} per year.`;
