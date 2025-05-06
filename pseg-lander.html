@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -93,6 +94,22 @@
             return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
         }
 
+        function getIncreasePercentage(utility) {
+            // Standardize the utility parameter to uppercase for easier comparison
+            utility = utility ? utility.toUpperCase() : '';
+            
+            // Set increase rates based on utility
+            if (utility === 'PSEG' || utility === 'JCPL' || utility === 'ACE') {
+                return 0.18715;
+            } else if (utility === 'BGE') {
+                return 0.1911;
+            } else if (utility === 'PPL' || utility === 'PSEG') {
+                return 0.1891;
+            } else {
+                return 0.186; // Default rate for any other utility
+            }
+        }
+
         function calculateSavings() {
             var bill = parseFloat(document.getElementById('billInput').value);
 
@@ -101,9 +118,12 @@
                 return;
             }
 
-            var increase = bill * 0.18715*12;
-            var communitySavings = bill * 0.15*12;
-            var onsiteSavings = (bill - 5)*12;
+            var utility = getURLParameter('utility') || 'electric';
+            var increaseRate = getIncreasePercentage(utility);
+            
+            var increase = bill * increaseRate * 12;
+            var communitySavings = bill * 0.15 * 12;
+            var onsiteSavings = (bill - 5) * 12;
             var demandResponse = bill/(1000*.18) * (50+200)/2;
 
             
