@@ -121,9 +121,32 @@
             var utility = getURLParameter('utility') || 'electric';
             var increaseRate = getIncreasePercentage(utility);
             
+            // Standardize the utility parameter to uppercase for easier comparison
+            var utilityUpper = utility ? utility.toUpperCase() : '';
+            
             var increase = bill * increaseRate * 12;
-            var communitySavings = bill * 0.15 * 12;
-            var onsiteSavings = (bill - 5) * 12;
+            
+            // Set community solar savings to 0 for utilities other than BGE, PSEG, JCPL, or ACE
+            var communitySavings = 0;
+            if (utilityUpper === 'BGE' || utilityUpper === 'PSEG' || utilityUpper === 'JCPL' || utilityUpper === 'ACE') {
+                communitySavings = bill * 0.15 * 12;
+            }
+            
+            // Calculate onsite solar savings based on utility
+            var monthlyFee = 10; // Default fee for utilities not specifically listed
+            if (utilityUpper === 'PSEG') {
+                monthlyFee = 5;
+            } else if (utilityUpper === 'BGE') {
+                monthlyFee = 9.65;
+            } else if (utilityUpper === 'PPL') {
+                monthlyFee = 19.79;
+            } else if (utilityUpper === 'PECO') {
+                monthlyFee = 11.25;
+            } else if (utilityUpper === 'JCPL') {
+                monthlyFee = 3.25;
+            }
+            
+            var onsiteSavings = (bill - monthlyFee) * 12;
             var demandResponse = bill/(1000*.18) * (50+200)/2;
 
             
