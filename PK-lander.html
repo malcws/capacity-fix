@@ -68,7 +68,7 @@
     <center><img src="PK-logo.png" alt="PowerKiosk.com Logo" class="logo"></center>
     
     <h1 id="pageTitle">Manage Rising Electric Bills</h1>
-    <p id="introText">Your electric bill is increasing in June 2025.<br>Let's find out how much--and see what you can do about it.</p>
+    <p id="introText">Your PSEG bill is increasing in June 2025.<br>Let's find out how much--and see what you can do about it.</p>
 
     <h2>What is your average monthly electric bill?</h2>
     <input type="number" id="billInput" placeholder="Enter your bill amount in dollars--an estimate is fine">
@@ -128,7 +128,7 @@
             // Set community solar savings to 0 for utilities other than BGE, PSEG, JCPL, or ACE
             var communitySavings = 0;
             if (utilityUpper === 'BGE' || utilityUpper === 'PSEG' || utilityUpper === 'JCPL' || utilityUpper === 'ACE') {
-                communitySavings = Math.max(bill * 0.15 * 12,1633);
+                communitySavings = Math.max(bill * 0.15 * 12, 1633);
             }
             
             // Calculate onsite solar savings based on utility
