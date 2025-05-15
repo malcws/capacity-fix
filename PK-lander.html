@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electric Bill Savings Estimator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1, h2, p {
+            text-align: center;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 8px 16px;
+            font-size: 16px;
+            display: block;
+            width: 150px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .results {
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+        }
+        .result-line {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .learn-more {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .learn-more a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .learn-more a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <center><img src="electricityrates-logo.png" alt="ElectricityRates.com Logo" class="logo"></center>
+    
+    <h1 id="pageTitle">Help With Your Electric Bill</h1>
+    <p id="introText">Your PSEG bill is increasing in June 2025.<br>Let's find out how much--and see what you can do about it.</p>
+
+    <h2>What is your average monthly electric bill?</h2>
+    <input type="number" id="billInput" placeholder="Enter your bill amount in dollars--an estimate is fine">
+    <button onclick="calculateSavings()">OK</button>
+
+    <div class="results" id="results">
+        <div style="color: red;" class="result-line" id="billIncrease"></div>
+        <div class="result-line" id="communitySolarSavings"></div>
+        <div class="result-line" id="onsiteSolarSavings"></div>
+        <div class="result-line" id="demandResponse"></div>
+    </div>
+
+    <div class="learn-more">
+        <a href="mailto:info@sustaine.com?subject=Bill%20Help&body=Please%20send%20me%20details%20on%20how%20to%20reduce%20my%20increasing%20electric%20bill!">Learn more</a>
+    </div>
+
+    <script>
+        function getURLParameter(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(window.location.search);
+            return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+
+        function getIncreasePercentage(utility) {
+            // Standardize the utility parameter to uppercase for easier comparison
+            utility = utility ? utility.toUpperCase() : '';
+            
+            // Set increase rates based on utility
+            if (utility === 'PSEG' || utility === 'JCPL' || utility === 'ACE') {
+                return 0.18715;
+            } else if (utility === 'BGE') {
+                return 0.1911;
+            } else if (utility === 'PPL' || utility === 'PSEG') {
+                return 0.1891;
+            } else {
+                return 0.186; // Default rate for any other utility
+            }
+        }
+
+        function calculateSavings() {
+            var bill = parseFloat(document.getElementById('billInput').value);
+
+            if (isNaN(bill) || bill <= 0) {
+                alert('Please enter a valid bill amount.');
+                return;
+            }
+
+            var utility = getURLParameter('utility') || 'electric';
+            var increaseRate = getIncreasePercentage(utility);
+            
+            // Standardize the utility parameter to uppercase for easier comparison
+            var utilityUpper = utility ? utility.toUpperCase() : '';
+            
+            var increase = bill * increaseRate * 12;
+            
+            // Set community solar savings to 0 for utilities other than BGE, PSEG, JCPL, or ACE
+            var communitySavings = 0;
+            if (utilityUpper === 'BGE' || utilityUpper === 'PSEG' || utilityUpper === 'JCPL' || utilityUpper === 'ACE') {
+                communitySavings = bill * 0.15 * 12;
+            }
+            
+            // Calculate onsite solar savings based on utility
+            var monthlyFee = 10; // Default fee for utilities not specifically listed
+            if (utilityUpper === 'PSEG') {
+                monthlyFee = 5;
+            } else if (utilityUpper === 'BGE') {
+                monthlyFee = 9.65;
+            } else if (utilityUpper === 'PPL') {
+                monthlyFee = 19.79;
+            } else if (utilityUpper === 'PECO') {
+                monthlyFee = 11.25;
+            } else if (utilityUpper === 'JCPL') {
+                monthlyFee = 3.25;
+            }
+            
+            var onsiteSavings = (bill - monthlyFee) * 12;
+            var demandResponse = bill/(1000*.18) * (50+200)/2;
+
+            
+            document.getElementById('billIncrease').textContent = `Your electric bill is projected to increase $${increase.toFixed(2)} per year.`;
+            document.getElementById('communitySolarSavings').textContent = `Community solar can save you $${communitySavings.toFixed(2)} per year.`;
+            document.getElementById('onsiteSolarSavings').textContent = `Onsite solar can save you $${onsiteSavings.toFixed(2)} per year.`;
+            document.getElementById('demandResponse').textContent = `Reducing usage on five afternoons each summer can save you $${demandResponse.toFixed(2)} per year.`;
+
+            document.getElementById('results').style.display = 'block';
+        }
+
+        window.onload = function() {
+            var utility = getURLParameter('utility');
+            if (!utility) {
+                utility = 'electric';
+            }
+            document.getElementById('introText').innerHTML = `Your ${utility} bill is increasing in June 2025.<br>Let's find out how much--and see what you can do about it.`;
+        };
+    </script>
+
+</body>
+</html>
