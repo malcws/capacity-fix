@@ -128,7 +128,7 @@
             // Set community solar savings to 0 for utilities other than BGE, PSEG, JCPL, or ACE
             var communitySavings = 0;
             if (utilityUpper === 'BGE' || utilityUpper === 'PSEG' || utilityUpper === 'JCPL' || utilityUpper === 'ACE') {
-                communitySavings = max(bill * 0.15 * 12,1633);
+                communitySavings = Math.max(bill * 0.15 * 12,1633);
             }
             
             // Calculate onsite solar savings based on utility
