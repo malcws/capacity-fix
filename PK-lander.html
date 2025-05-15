@@ -65,10 +65,10 @@
 </head>
 <body>
 
-    <center><img src="electricityrates-logo.png" alt="ElectricityRates.com Logo" class="logo"></center>
+    <center><img src="PK-logo.png" alt="PowerKiosk.com Logo" class="logo"></center>
     
-    <h1 id="pageTitle">Help With Your Electric Bill</h1>
-    <p id="introText">Your PSEG bill is increasing in June 2025.<br>Let's find out how much--and see what you can do about it.</p>
+    <h1 id="pageTitle">Manage Rising Electric Bills</h1>
+    <p id="introText">Your electric bill is increasing in June 2025.<br>Let's find out how much--and see what you can do about it.</p>
 
     <h2>What is your average monthly electric bill?</h2>
     <input type="number" id="billInput" placeholder="Enter your bill amount in dollars--an estimate is fine">
@@ -146,7 +146,7 @@
             }
             
             var onsiteSavings = (bill - monthlyFee) * 12;
-            var demandResponse = bill/(1000*.18) * (50+200)/2;
+            var demandResponse = bill/(1000*.18) * (50+200)/2 + (bill/.18/730*3) * 15;
 
             
             document.getElementById('billIncrease').textContent = `Your electric bill is projected to increase $${increase.toFixed(2)} per year.`;
