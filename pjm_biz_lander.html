@@ -92,6 +92,21 @@
         .email-signup {
             margin-top: 20px;
         }
+        .confirmation-message {
+            display: none;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #e6f7e6;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        .confirmation-message ul {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .confirmation-message li {
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
@@ -156,6 +171,16 @@
             <input type="email" id="email" name="email" placeholder="Enter your email">
             <button onclick="signUpForAlerts()">Sign Up</button>
         </div>
+        <div id="confirmation-message" class="confirmation-message">
+            <p>Great! We'll send a notification to <span id="user-email"></span> when one of the 5 Afternoons is coming. It could be any weekday between June 1 and Sep 30--especially the really hot days. We'll specify a 2-hour window on that day, and repeat these tips for minimizing your usage:</p>
+            <ul>
+                <li>Turn up your thermostat.</li>
+                <li>Delay running major equipment.</li>
+                <li>Turn off non-critical lighting.</li>
+            </ul>
+            <p>Questions? Email us <a href="mailto:info@sustaine.com">info@sustaine.com</a>.</p>
+            <p>Thanks, and let's save some energy dollars!</p>
+        </div>
     </div>
     
     <script>
@@ -174,6 +199,9 @@
             document.getElementById('increase-amount').textContent = "Your bill is estimated to increase " + formattedIncrease + " per year.";
             document.getElementById('results').style.display = "block";
             
+            // Hide confirmation message if previously shown
+            document.getElementById('confirmation-message').style.display = "none";
+            
             // Scroll to results
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
@@ -185,7 +213,13 @@
                 return;
             }
             
-            alert("Thank you! We'll send you alerts about high-cost energy days.");
+            // Display the confirmation message with the user's email
+            document.getElementById('user-email').textContent = email;
+            document.getElementById('confirmation-message').style.display = "block";
+            
+            // Scroll to confirmation message
+            document.getElementById('confirmation-message').scrollIntoView({ behavior: 'smooth' });
+            
             // In a real implementation, you would send this to your backend
         }
     </script>
