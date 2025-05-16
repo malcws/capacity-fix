@@ -149,6 +149,7 @@
                 <option value="RECO">RECO - Rockland Electric Company</option>
                 <option value="SMECO">SMECO - Southern Maryland Electric Cooperative</option>
                 <option value="SRE">SRE - Silver Run Electric</option>
+                <option value="NONE">None of the above</option>
             </select>
         </div>
         
@@ -178,7 +179,7 @@
                 <li>Delay running major equipment.</li>
                 <li>Turn off non-critical lighting.</li>
             </ul>
-            <p>Questions? Email us <a href="mailto:info@sustaine.com">info@sustaine.com</a>.</p>
+            <p>Questions? <a href="mailto:info@sustaine.com?subject=PJM%205%20Afternoons%20Question">Email us.</a></p>
             <p>Thanks, and let's save some energy dollars!</p>
         </div>
     </div>
@@ -188,16 +189,52 @@
             var utility = document.getElementById('utility').value;
             var monthlyBill = document.getElementById('monthly-bill').value;
             
-            if (utility === "" || monthlyBill === "" || isNaN(monthlyBill) || monthlyBill <= 0) {
-                alert("Please select a utility and enter a valid monthly bill amount.");
+            if (utility === "") {
+                alert("Please select a utility.");
                 return;
             }
             
-            var annualIncrease = monthlyBill * 0.182 * 12;
+            // Check if "None of the above" is selected
+            if (utility === "NONE") {
+                document.getElementById('increase-amount').textContent = "If your utility isn't listed, you probably aren't subject to the increase.";
+                document.getElementById('results').style.display = "block";
+                
+                // Hide the alert-info and email-signup sections
+                document.querySelector('.alert-info').style.display = "none";
+                document.querySelector('.email-signup').style.display = "none";
+                
+                // Hide confirmation message if previously shown
+                document.getElementById('confirmation-message').style.display = "none";
+                
+                // Scroll to results
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+            
+            // Continue with normal flow if a listed utility is selected
+            if (monthlyBill === "" || isNaN(monthlyBill) || monthlyBill <= 0) {
+                alert("Please enter a valid monthly bill amount.");
+                return;
+            }
+            
+            // Set multiplier based on utility
+            var multiplier = 0.182; // Default multiplier
+            
+            if (utility === "BGE") {
+                multiplier = 0.314;
+            } else if (utility === "DOM") {
+                multiplier = 0.299;
+            }
+            
+            var annualIncrease = monthlyBill * multiplier * 12;
             var formattedIncrease = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(annualIncrease);
             
             document.getElementById('increase-amount').textContent = "Your bill is estimated to increase " + formattedIncrease + " per year.";
             document.getElementById('results').style.display = "block";
+            
+            // Show the alert-info and email-signup sections (in case they were hidden previously)
+            document.querySelector('.alert-info').style.display = "block";
+            document.querySelector('.email-signup').style.display = "block";
             
             // Hide confirmation message if previously shown
             document.getElementById('confirmation-message').style.display = "none";
