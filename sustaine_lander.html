@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustaine - Managing Energy Costs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            max-width: 300px;
+            height: auto;
+        }
+        h1 {
+            color: #1a365d;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .intro-text {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+        .form-section {
+            background-color: #f5f7fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .tip {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        button {
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+        }
+        button:hover {
+            background-color: #006699;
+        }
+        .results {
+            display: none;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            margin-top: 30px;
+        }
+        .increase-amount {
+            color: red;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .alert-info {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .email-signup {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="https://i.imgur.com/2WgZCDT.png" alt="Sustaine Logo" class="logo">
+    </div>
+
+    <h1>Managing Energy Costs</h1>
+    
+    <div class="intro-text">
+        Find out how much your electric bill is going up in June--and what you can do about it.
+    </div>
+    
+    <div class="form-section">
+        <div class="form-group">
+            <label for="utility">What is your electric utility?</label>
+            <select id="utility" name="utility">
+                <option value="">-- Select your utility --</option>
+                <option value="AECO">AECO - Atlantic City Electric</option>
+                <option value="AEP">AEP - American Electric Power</option>
+                <option value="ALLEG">ALLEG - Allegheny Power (FirstEnergy - AP)</option>
+                <option value="BGE">BGE - Baltimore Gas & Electric</option>
+                <option value="COMED">COMED - Commonwealth Edison</option>
+                <option value="CPP">CPP - Cleveland Public Power</option>
+                <option value="DAY">DAY - Dayton Power & Light</option>
+                <option value="DEOK">DEOK - Duke Energy Ohio & Kentucky</option>
+                <option value="DOM">DOM - Dominion Virginia Power</option>
+                <option value="DPL">DPL - Delmarva Power</option>
+                <option value="DUQ">DUQ - Duquesne Light Company</option>
+                <option value="EKPC">EKPC - East Kentucky Power Cooperative</option>
+                <option value="JCPL">JCPL - Jersey Central Power & Light (FirstEnergy - JCPL)</option>
+                <option value="METED">METED - Metropolitan Edison (FirstEnergy - Met-Ed)</option>
+                <option value="OEPEN">OEPEN - FirstEnergy - ATSI (Penn Power, Ohio Edison, etc.)</option>
+                <option value="OVEC">OVEC - Ohio Valley Electric Corporation</option>
+                <option value="PECO">PECO - PECO Energy</option>
+                <option value="PENELEC">PENELEC - Pennsylvania Electric Company (FirstEnergy - Penelec)</option>
+                <option value="PEPCO">PEPCO - Potomac Electric Power Company</option>
+                <option value="PPL">PPL - PPL Electric Utilities</option>
+                <option value="PSEG">PSEG - Public Service Electric & Gas</option>
+                <option value="RECO">RECO - Rockland Electric Company</option>
+                <option value="SMECO">SMECO - Southern Maryland Electric Cooperative</option>
+                <option value="SRE">SRE - Silver Run Electric</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="monthly-bill">How much is your average monthly electric bill?</label>
+            <input type="number" id="monthly-bill" name="monthly-bill" placeholder="Enter amount" min="1">
+            <div class="tip">Dollars per month, estimate is fine.</div>
+        </div>
+        
+        <button onclick="calculateIncrease()">Submit</button>
+    </div>
+    
+    <div id="results" class="results">
+        <div id="increase-amount" class="increase-amount"></div>
+        <div class="alert-info">
+            Your electric usage on just FIVE AFTERNOONS every summer sets this amount. To reduce it, simply minimize electricity usage during a 2-hour window on those afternoons. <span class="bold">Would you like an email or text alert when one of those afternoons is coming?</span>
+        </div>
+        <div class="email-signup">
+            <label for="email">Send Alert To:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email or text">
+            <button onclick="signUpForAlerts()">Sign Up</button>
+        </div>
+    </div>
+    
+    <script>
+        function calculateIncrease() {
+            var utility = document.getElementById('utility').value;
+            var monthlyBill = document.getElementById('monthly-bill').value;
+            
+            if (utility === "" || monthlyBill === "" || isNaN(monthlyBill) || monthlyBill <= 0) {
+                alert("Please select a utility and enter a valid monthly bill amount.");
+                return;
+            }
+            
+            var annualIncrease = monthlyBill * 0.182 * 12;
+            var formattedIncrease = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(annualIncrease);
+            
+            document.getElementById('increase-amount').textContent = "Your bill is estimated to increase " + formattedIncrease + " per year.";
+            document.getElementById('results').style.display = "block";
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function signUpForAlerts() {
+            var email = document.getElementById('email').value;
+            if (email === "" || !email.includes('@') || !email.includes('.')) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+            
+            alert("Thank you! We'll send you alerts about high-cost energy days.");
+            // In a real implementation, you would send this to your backend
+        }
+    </script>
+</body>
+</html>
