@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustaine - Managing Energy Costs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            max-width: 300px;
+            height: auto;
+        }
+        h1 {
+            color: #1a365d;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .intro-text {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+        .form-section {
+            background-color: #f5f7fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .tip {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        button {
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+        }
+        button:hover {
+            background-color: #006699;
+        }
+        .results {
+            display: none;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            margin-top: 30px;
+        }
+        .increase-amount {
+            color: red;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .alert-info {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .email-signup {
+            margin-top: 20px;
+        }
+        .confirmation-message {
+            display: none;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #e6f7e6;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        .confirmation-message ul {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .confirmation-message li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="https://malcws.github.io/capacity-fix/your-logo.png" alt="Your Logo" class="logo">
+    </div>
+
+    <h1>Managing Energy Costs</h1>
+    
+    <div class="intro-text">
+        Find out how much your electric bill is going up in June--and what you can do about it.
+    </div>
+    
+    <div class="form-section">
+        <div class="form-group">
+            <label for="zipcode">What is your zip code?</label>
+            <input type="text" id="zipcode" name="zipcode" placeholder="Enter your zip code" maxlength="5" pattern="[0-9]{5}">
+            <div class="tip">Enter your 5-digit zip code.</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="monthly-bill">How much is your average monthly electric bill?</label>
+            <input type="number" id="monthly-bill" name="monthly-bill" placeholder="Enter amount" min="1">
+            <div class="tip">Dollars per month, estimate is fine.</div>
+        </div>
+        
+        <button onclick="calculateIncrease()">Submit</button>
+    </div>
+    
+    <div id="results" class="results">
+        <div id="increase-amount" class="increase-amount"></div>
+        <div class="alert-info">
+            Your electric usage on just FIVE AFTERNOONS every summer determines your increase. To reduce it, simply minimize electricity usage during a 2-hour window on those afternoons. <span class="bold">Would you like an alert when one of those afternoons is coming?</span>
+        </div>
+        <div class="email-signup">
+            <label for="email">Email address:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email">
+            <button onclick="signUpForAlerts()">Sign Up</button>
+        </div>
+        <div id="confirmation-message" class="confirmation-message">
+            <p>Great! We'll send a notification to <span id="user-email"></span> when one of the 5 Afternoons is coming. It could be any weekday between June 1 and Sep 30--especially the really hot days. We'll specify a 2-hour window on that day, and repeat these tips for minimizing your usage:</p>
+            <ul>
+                <li>Turn up your thermostat.</li>
+                <li>Delay running major equipment.</li>
+                <li>Turn off non-critical lighting.</li>
+            </ul>
+            <p>Questions? <a href="mailto:info@sustaine.com?subject=PJM%205%20Afternoons%20Question">Email us.</a></p>
+            <p>Thanks, and let's save some energy dollars!</p>
+        </div>
+    </div>
+    
+    <script>
+        function calculateIncrease() {
+            var zipcode = document.getElementById('zipcode').value;
+            var monthlyBill = document.getElementById('monthly-bill').value;
+            
+            if (zipcode === "") {
+                alert("Please enter your zip code.");
+                return;
+            }
+            
+            // Basic zip code validation (5 digits)
+            if (!/^\d{5}$/.test(zipcode)) {
+                alert("Please enter a valid 5-digit zip code.");
+                return;
+            }
+            
+            if (monthlyBill === "" || isNaN(monthlyBill) || monthlyBill <= 0) {
+                alert("Please enter a valid monthly bill amount.");
+                return;
+            }
+            
+            // Set utility to PPL regardless of zip code
+            var utility = "PPL";
+            
+            // Set multiplier based on utility (PPL uses default multiplier)
+            var multiplier = 0.182; // PPL multiplier
+            
+            var annualIncrease = monthlyBill * multiplier * 12;
+            var formattedIncrease = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(annualIncrease);
+            
+            document.getElementById('increase-amount').textContent = "Your bill is estimated to increase " + formattedIncrease + " per year.";
+            document.getElementById('results').style.display = "block";
+            
+            // Show the alert-info and email-signup sections
+            document.querySelector('.alert-info').style.display = "block";
+            document.querySelector('.email-signup').style.display = "block";
+            
+            // Hide confirmation message if previously shown
+            document.getElementById('confirmation-message').style.display = "none";
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function signUpForAlerts() {
+            var email = document.getElementById('email').value;
+            if (email === "" || !email.includes('@') || !email.includes('.')) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+            
+            // Display the confirmation message with the user's email
+            document.getElementById('user-email').textContent = email;
+            document.getElementById('confirmation-message').style.display = "block";
+            
+            // Scroll to confirmation message
+            document.getElementById('confirmation-message').scrollIntoView({ behavior: 'smooth' });
+            
+            // In a real implementation, you would send this to your backend
+        }
+    </script>
+</body>
+</html>
