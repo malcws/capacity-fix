@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pennsylvania Electricity Rates</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #ff6b35;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover {
+            color: #ff6b35;
+        }
+
+        .shop-btn {
+            background: #ff6b35;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .shop-btn:hover {
+            background: #e55a2b;
+        }
+
+        .trustpilot {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stars {
+            color: #00b67a;
+        }
+
+        .main-content {
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(135deg, #f8fbff 0%, #e8f4f8 100%);
+        }
+
+        .wave-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M0,50 C300,0 600,100 900,50 C1050,25 1150,75 1200,50 L1200,0 L0,0 Z" fill="%23ffffff" opacity="0.3"/></svg>') repeat-x;
+            background-size: 1200px 120px;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .title-orange {
+            color: #ff6b35;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .title-dark {
+            color: #2c3e50;
+            display: block;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
+        }
+
+        .show-me-btn {
+            background: linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .show-me-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4);
+            background: linear-gradient(135deg, #e55a2b 0%, #d14d20 100%);
+        }
+
+        .show-me-btn:active {
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 40px 20px;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .show-me-btn {
+                padding: 15px 30px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">e</div>
+                <span class="logo-text">electricityrates.com</span>
+            </div>
+            <nav class="nav">
+                <a href="#">By Location</a>
+                <a href="#">By Provider</a>
+                <a href="#">By Utility</a>
+                <a href="#">For Business</a>
+                <a href="#">Resources</a>
+                <a href="#">About</a>
+                <a href="#" class="shop-btn">Shop Rates</a>
+            </nav>
+            <div class="trustpilot">
+                <span class="stars">★★★★★</span>
+                <span>Excellent</span>
+                <span>5,819 reviews on Trustpilot</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="wave-pattern"></div>
+            
+            <h1 class="title">
+                <span class="title-orange">Pennsylvania Electricity Rates</span>
+                <span class="title-dark">Set to Increase in June 2025</span>
+            </h1>
+            
+            <p class="subtitle">
+                Learn more about the impact from the 2024 PJM capacity auction and what it means for your energy bills.
+            </p>
+            
+            <button class="show-me-btn" onclick="window.open('https://malcws.github.io/capacity-fix/pseg-lander.html?utility=PPL', '_blank')">
+                Show Me!
+            </button>
+        </main>
+    </div>
+</body>
+</html>
