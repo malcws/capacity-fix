@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electric Rate Calculator - EnergySage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #6366f1 0%, #f97316 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 28px;
+            font-weight: 700;
+            text-decoration: none;
+            color: #4c1d95;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .logo-text {
+            font-size: 32px;
+            font-weight: 600;
+            color: #4c1d95;
+            letter-spacing: -0.02em;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #4c1d95;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .intro {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #0ea5e9;
+        }
+
+        .question {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #4c1d95;
+        }
+
+        .button-group {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .utility-btn, .notification-btn, .contact-btn {
+            padding: 12px 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        .utility-btn:hover, .notification-btn:hover, .contact-btn:hover {
+            border-color: #f97316;
+            background: #fff7ed;
+            transform: translateY(-2px);
+        }
+
+        .utility-btn.selected, .notification-btn.selected, .contact-btn.selected {
+            background: #f97316;
+            color: white;
+            border-color: #f97316;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #4c1d95;
+        }
+
+        input[type="number"], input[type="email"], input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #f97316;
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .result {
+            background: #f0fdf4;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #22c55e;
+        }
+
+        .savings {
+            background: #fff7ed;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #f97316;
+        }
+
+        .final-message {
+            background: #faf5ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #6366f1;
+            text-align: center;
+        }
+
+        .continue-btn {
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .continue-btn:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+        }
+
+        .continue-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #718096;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo Header -->
+        <div class="logo-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Lightning bolt icon in EnergySage style -->
+                        <defs>
+                            <linearGradient id="lightning-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#f97316;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#ea580c;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M30 10 L50 10 L35 45 L55 45 L70 90 L50 90 L65 55 L45 55 Z" fill="url(#lightning-gradient)" stroke="none"/>
+                        <!-- Small connecting lines to represent energy -->
+                        <line x1="25" y1="25" x2="30" y2="30" stroke="#f97316" stroke-width="2"/>
+                        <line x1="70" y1="25" x2="75" y2="30" stroke="#f97316" stroke-width="2"/>
+                        <line x1="25" y1="75" x2="30" y2="70" stroke="#f97316" stroke-width="2"/>
+                        <line x1="70" y1="75" x2="75" y2="70" stroke="#f97316" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="logo-text">energysage</div>
+            </a>
+        </div>
+
+        <!-- Step 1: Introduction and Utility Selection -->
+        <div class="step active" id="step1">
+            <div class="intro">
+                Unfortunately, your electric rates are going up. The increase is due to costs that your utility is required to pass through by PJM, which is a multi-state grid operator. EnergySage would like to help you minimize these costs.
+            </div>
+            
+            <div class="question">Who is your electric utility?</div>
+            <div class="button-group">
+                <div class="utility-btn" data-utility="BGE">BGE</div>
+                <div class="utility-btn" data-utility="ACE">Atlantic City Electric</div>
+                <div class="utility-btn" data-utility="JCPL">JCPL</div>
+                <div class="utility-btn" data-utility="PSEG">PSEG</div>
+                <div class="utility-btn" data-utility="PECO">PECO</div>
+                <div class="utility-btn" data-utility="PPL">PPL</div>
+                <div class="utility-btn" data-utility="Other">Other</div>
+            </div>
+            <button class="continue-btn" id="continueStep1" disabled>Continue</button>
+        </div>
+
+        <!-- Step 2: Monthly Bill Input -->
+        <div class="step" id="step2">
+            <div class="question">What is your average monthly electric bill?</div>
+            <div class="input-group">
+                <label for="monthlyBill">Monthly Electric Bill</label>
+                <input type="number" id="monthlyBill" placeholder="Enter amount (e.g., 150)" min="0" step="0.01">
+                <div class="error" id="billError"></div>
+            </div>
+            <button class="continue-btn" id="continueStep2">Calculate Impact</button>
+        </div>
+
+        <!-- Step 3: Results and Savings -->
+        <div class="step" id="step3">
+            <div class="result" id="increaseResult"></div>
+            <div class="savings" id="savingsResult"></div>
+            
+            <div class="question">Would you like a notification by email or text at 7am on the appropriate 5-8 days this summer?</div>
+            <div class="button-group">
+                <div class="notification-btn" data-choice="yes">Yes</div>
+                <div class="notification-btn" data-choice="no">No</div>
+            </div>
+            <button class="continue-btn" id="continueStep3" disabled>Continue</button>
+        </div>
+
+        <!-- Step 4: Contact Method -->
+        <div class="step" id="step4">
+            <div class="question">Please choose your preferred notification method:</div>
+            <div class="button-group">
+                <div class="contact-btn" data-method="email">Email</div>
+                <div class="contact-btn" data-method="text">Text Message</div>
+            </div>
+            <button class="continue-btn" id="continueStep4" disabled>Continue</button>
+        </div>
+
+        <!-- Step 5: Contact Information -->
+        <div class="step" id="step5">
+            <div class="input-group" id="emailGroup" style="display: none;">
+                <label for="emailInput">Email Address</label>
+                <input type="email" id="emailInput" placeholder="Enter your email address">
+                <div class="error" id="emailError"></div>
+            </div>
+            
+            <div class="input-group" id="phoneGroup" style="display: none;">
+                <label for="phoneInput">Phone Number</label>
+                <input type="tel" id="phoneInput" placeholder="Enter your 10-digit phone number">
+                <div class="error" id="phoneError"></div>
+            </div>
+            
+            <button class="continue-btn" id="continueStep5">Submit</button>
+        </div>
+
+        <!-- Step 6: Final Messages -->
+        <div class="step" id="step6">
+            <div class="final-message" id="finalMessage"></div>
+        </div>
+
+        <!-- Other Utility Message -->
+        <div class="step" id="otherUtility">
+            <div class="final-message">
+                We are not yet able to provide answers for other utilities.<br>
+                Thank you for your interest.
+            </div>
+        </div>
+
+        <!-- No Notification Message -->
+        <div class="step" id="noNotification">
+            <div class="final-message">
+                You should watch for the hottest days this summer and minimize your electricity usage between 4pm and 6pm.
+                <br><br>
+                <strong>Energy storage</strong> will save you even more each year in PJM charges. Plus, you'll have emergency backup power for your whole home if you need it. You can save around $10,000 by adding storage now. <a href="https://www.energysage.com/solar-batteries/" target="_blank" style="color: #f97316; text-decoration: underline;">Learn more...</a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>&copy; 2025 EnergySage - Helping you save on energy costs</p>
+        </div>
+    </div>
+
+    <script>
+        let selectedUtility = '';
+        let monthlyBill = 0;
+        let annualIncrease = 0;
+        let potentialSavings = 0;
+        let notificationChoice = '';
+        let contactMethod = '';
+
+        // Utility multipliers
+        const multipliers = {
+            'BGE': 0.24,
+            'ACE': 0.21,
+            'JCPL': 0.21,
+            'PSEG': 0.21,
+            'PECO': 0.18,
+            'PPL': 0.18
+        };
+
+        // Email validation
+        function validateEmail(email) {
+            const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return pattern.test(email);
+        }
+
+        // Phone validation
+        function validatePhone(phone) {
+            const digits = phone.replace(/\D/g, '');
+            return digits.length === 10;
+        }
+
+        // Format phone number
+        function formatPhone(phone) {
+            const digits = phone.replace(/\D/g, '');
+            return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+        }
+
+        // Show step
+        function showStep(stepId) {
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById(stepId).classList.add('active');
+        }
+
+        // Step 1: Utility Selection
+        document.querySelectorAll('.utility-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.utility-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedUtility = this.dataset.utility;
+                document.getElementById('continueStep1').disabled = false;
+            });
+        });
+
+        document.getElementById('continueStep1').addEventListener('click', function() {
+            if (selectedUtility === 'Other') {
+                showStep('otherUtility');
+            } else {
+                showStep('step2');
+            }
+        });
+
+        // Step 2: Monthly Bill
+        document.getElementById('continueStep2').addEventListener('click', function() {
+            const billInput = document.getElementById('monthlyBill');
+            const errorDiv = document.getElementById('billError');
+            
+            monthlyBill = parseFloat(billInput.value);
+            
+            if (!monthlyBill || monthlyBill <= 0) {
+                errorDiv.textContent = 'Please enter a valid positive amount.';
+                return;
+            }
+            
+            errorDiv.textContent = '';
+            
+            // Calculate results
+            const multiplier = multipliers[selectedUtility];
+            annualIncrease = monthlyBill * 12 * multiplier;
+            potentialSavings = annualIncrease * 1.15;
+            
+            // Display results
+            document.getElementById('increaseResult').innerHTML = 
+                `Your electric bill is increasing by <strong>$${annualIncrease.toFixed(2)}</strong> annually.`;
+            
+            document.getElementById('savingsResult').innerHTML = 
+                `You can turn your thermostat up 3 degrees for a two-hour window on 5-8 summer afternoons and save <strong>$${potentialSavings.toFixed(2)}</strong>.`;
+            
+            showStep('step3');
+        });
+
+        // Step 3: Notification Choice
+        document.querySelectorAll('.notification-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.notification-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                notificationChoice = this.dataset.choice;
+                document.getElementById('continueStep3').disabled = false;
+            });
+        });
+
+        document.getElementById('continueStep3').addEventListener('click', function() {
+            if (notificationChoice === 'no') {
+                showStep('noNotification');
+            } else {
+                showStep('step4');
+            }
+        });
+
+        // Step 4: Contact Method
+        document.querySelectorAll('.contact-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.contact-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                contactMethod = this.dataset.method;
+                document.getElementById('continueStep4').disabled = false;
+            });
+        });
+
+        document.getElementById('continueStep4').addEventListener('click', function() {
+            if (contactMethod === 'email') {
+                document.getElementById('emailGroup').style.display = 'block';
+                document.getElementById('phoneGroup').style.display = 'none';
+            } else {
+                document.getElementById('emailGroup').style.display = 'none';
+                document.getElementById('phoneGroup').style.display = 'block';
+            }
+            showStep('step5');
+        });
+
+        // Step 5: Contact Information
+        document.getElementById('continueStep5').addEventListener('click', function() {
+            if (contactMethod === 'email') {
+                const emailInput = document.getElementById('emailInput');
+                const errorDiv = document.getElementById('emailError');
+                
+                if (!validateEmail(emailInput.value)) {
+                    errorDiv.textContent = 'Please enter a valid email address.';
+                    return;
+                }
+                
+                errorDiv.textContent = '';
+                document.getElementById('finalMessage').innerHTML = 
+                    `We look forward to communicating with you this summer at <strong>${emailInput.value}</strong>. Thank you!
+                    <br><br>
+                    <p><strong>Energy storage</strong> will save you even more each year in PJM charges. Plus, you'll have emergency backup power for your whole home if you need it. You can save around $10,000 by adding storage now. <a href="https://www.energysage.com/solar-batteries/" target="_blank" style="color: #f97316; text-decoration: underline;">Learn more...</a></p>`;
+            } else {
+                const phoneInput = document.getElementById('phoneInput');
+                const errorDiv = document.getElementById('phoneError');
+                
+                if (!validatePhone(phoneInput.value)) {
+                    errorDiv.textContent = 'Please enter a valid 10-digit phone number.';
+                    return;
+                }
+                
+                errorDiv.textContent = '';
+                const formattedPhone = formatPhone(phoneInput.value);
+                document.getElementById('finalMessage').innerHTML = 
+                    `We look forward to communicating with you this summer at <strong>${formattedPhone}</strong>. Thank you!
+                    <br><br>
+                    <p><strong>Energy storage</strong> will save you even more each year in PJM charges. Plus, you'll have emergency backup power for your whole home if you need it. You can save around $10,000 by adding storage now. <a href="https://www.energysage.com/energy-storage/" target="_blank" style="color: #f97316; text-decoration: underline;">Learn more...</a></p>`;
+            }
+            
+            showStep('step6');
+        });
+    </script>
+</body>
+</html>
