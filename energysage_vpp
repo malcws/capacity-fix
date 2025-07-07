@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electric Savings Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .intro-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .utility-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .utility-btn, .action-btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .utility-btn:hover, .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .bill-input {
+            margin: 30px 0;
+        }
+
+        .bill-input label {
+            display: block;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .bill-input input {
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            width: 200px;
+            text-align: center;
+        }
+
+        .bill-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .calculate-btn {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 5px solid #dc3545;
+        }
+
+        .savings-box {
+            background: #e8f5e8;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 5px solid #28a745;
+        }
+
+        .incentive-box {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 5px solid #2196f3;
+        }
+
+        .vpp-explanation {
+            background: #fff3cd;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 5px solid #ffc107;
+            text-align: left;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header img {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .cumulative-section {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cumulative-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cumulative-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cumulative-breakdown {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .cumulative-item {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 15px;
+            flex: 1;
+            min-width: 200px;
+            backdrop-filter: blur(10px);
+        }
+
+        .cumulative-item h4 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .cumulative-item .amount {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .total-savings {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .user-choice {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .choice-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(45deg, #17a2b8, #138496);
+        }
+
+        .highlight {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .savings-highlight {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 1.1em;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8d7da;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .utility-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .final-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjUwIiB2aWV3Qm94PSIwIDAgMjAwIDUwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnPjxwYXRoIGQ9Ik0xMC41IDI1TDIwIDEwVjIwSDMwTDIwIDM1VjI1SDEwLjVaIiBmaWxsPSIjRkY3QjAwIi8+PHRleHQgeD0iNDAiIHk9IjMwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI2MDAiIGZpbGw9IiMzQzNDNDMiPmVuZXJneXNhZ2U8L3RleHQ+PC9nPjwvc3ZnPg==" alt="EnergySage" style="height: 80px; margin-bottom: 20px;">
+            <h1>Electric Savings Calculator</h1>
+        </div>
+        
+        <!-- Step 1: Introduction -->
+        <div class="step active" id="step1">
+            <div class="intro-text">
+                Unfortunately, your electric rates are going up. The increase is due to costs that your utility is required to pass through by PJM, which is a multi-state grid operator. We'd like to help you minimize these costs.
+            </div>
+            <p style="font-size: 1.1em; margin-bottom: 20px;">Who is your electric utility?</p>
+            <div class="utility-buttons">
+                <button class="utility-btn" onclick="selectUtility('BGE')">BGE</button>
+                <button class="utility-btn" onclick="selectUtility('ComEd')">ComEd</button>
+                <button class="utility-btn" onclick="selectUtility('ACE')">Atlantic City Electric</button>
+                <button class="utility-btn" onclick="selectUtility('JCPL')">JCP&L</button>
+                <button class="utility-btn" onclick="selectUtility('PSEG')">PSE&G</button>
+                <button class="utility-btn" onclick="selectUtility('PECO')">PECO</button>
+                <button class="utility-btn" onclick="selectUtility('PPL')">PPL</button>
+                <button class="utility-btn" onclick="selectUtility('Other')">Other</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Monthly Bill Input -->
+        <div class="step" id="step2">
+            <div class="bill-input">
+                <label for="monthlyBill">What is your average monthly electric bill?</label>
+                <input type="number" id="monthlyBill" placeholder="$" min="0" step="0.01">
+            </div>
+            <button class="calculate-btn" onclick="calculateIncrease()">Calculate My Rate Increase</button>
+        </div>
+
+        <!-- Step 3: Rate Increase Results -->
+        <div class="step" id="step3">
+            <div class="result-box">
+                <h2 style="color: #dc3545; margin-bottom: 15px;">Your Annual Rate Increase</h2>
+                <p style="font-size: 1.2em;">Based on your <span id="utilityName"></span> service and monthly bill of $<span id="billAmount"></span>, your electric bill is increasing by <span class="highlight">$<span id="increaseAmount"></span> annually</span>.</p>
+            </div>
+            
+            <div class="vpp-explanation">
+                <h3 style="color: #333; margin-bottom: 15px;">How You Can Save Money</h3>
+                <p style="margin-bottom: 15px;"><strong>Virtual Power Plant (VPP):</strong> A network of smart devices that work together to help balance the electric grid. When you participate, you earn money while helping reduce strain on the power system.</p>
+                <p><strong>Smart Devices:</strong> These are intelligent appliances like thermostats and water heaters that can automatically adjust their energy use during peak demand times. The best part? You can often get them for little to no cost through utility incentives!</p>
+            </div>
+            
+            <div class="vpp-explanation" style="background: #e8f5e8; border-left: 5px solid #28a745;">
+                <h3 style="color: #28a745; margin-bottom: 15px;">Ready to Get Started?</h3>
+                <p>You can enroll smart devices in your utility's Virtual Power Plant program to start earning rewards while helping the grid. Let's see what incentives are available to help you get smart devices at little to no cost:</p>
+            </div>
+            
+            <button class="action-btn" onclick="showIncentives()">See My Incentives</button>
+        </div>
+
+        <!-- Step 4: Incentives and Savings -->
+        <div class="step" id="step4">
+            <div class="incentive-box">
+                <h3 style="color: #2196f3; margin-bottom: 15px;">Smart Thermostat Incentive for <span id="utilityName2"></span></h3>
+                <div id="incentiveDetails"></div>
+            </div>
+            
+            <div class="savings-box">
+                <h3 style="color: #28a745; margin-bottom: 15px;">Your Annual Savings Potential</h3>
+                <div id="savingsCalculation"></div>
+            </div>
+            
+            <div class="incentive-box">
+                <h3 style="color: #2196f3; margin-bottom: 15px;">Virtual Power Plant Participation Rewards</h3>
+                <div id="vppRewards"></div>
+            </div>
+            
+            <div class="cumulative-section">
+                <div class="cumulative-content">
+                    <h2 style="margin-bottom: 20px; font-size: 2em;">Your Total Annual Savings Potential</h2>
+                    <p style="font-size: 1.2em; margin-bottom: 20px;">These three benefits work together to maximize your savings:</p>
+                    
+                    <div class="cumulative-breakdown">
+                        <div class="cumulative-item">
+                            <h4>Smart Thermostat Rebate</h4>
+                            <div class="amount" id="rebateAmount">Up to $100</div>
+                            <div>One-time savings</div>
+                        </div>
+                        <div class="cumulative-item">
+                            <h4>Energy Savings</h4>
+                            <div class="amount" id="energySavingsAmount">$0</div>
+                            <div>Every year</div>
+                        </div>
+                        <div class="cumulative-item">
+                            <h4>VPP Rewards</h4>
+                            <div class="amount" id="vppRewardsAmount">$0</div>
+                            <div>Annual participation</div>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 1.4em; margin: 20px 0;">First Year Total Savings:</p>
+                    <div class="total-savings" id="totalSavings">$0</div>
+                    <p style="font-size: 1.1em; opacity: 0.9;">Plus continued annual savings from energy efficiency and VPP participation!</p>
+                </div>
+            </div>
+            
+            <div class="user-choice">
+                <h3 style="color: #333; margin-bottom: 20px; text-align: center;">What's Your Next Step?</h3>
+                <p style="text-align: center; margin-bottom: 25px; font-size: 1.1em;">Choose the option that best fits your situation:</p>
+                
+                <div class="choice-buttons">
+                    <button class="action-btn primary" onclick="signUpForDR()">I Have a Smart Thermostat - Enroll in DR Program</button>
+                    <button class="action-btn secondary" onclick="learnMore()">Learn More About VPPs from EnergySage</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5: Other Utility Message -->
+        <div class="step" id="stepOther">
+            <div class="error-message">
+                We are not yet able to provide answers for other utilities. Please check back soon as we expand our coverage to additional utility companies.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedUtility = '';
+        let monthlyBill = 0;
+        let multiplier = 0;
+        let drLink = '';
+
+        const utilityData = {
+            'BGE': {
+                multiplier: 0.24,
+                incentive: '<strong>Up to $100</strong> rebate per qualifying ENERGY STAR® smart thermostat (limit 3 per household).',
+                incentiveLink: 'https://bgesmartenergy.com/residential/rebates-and-discounts/smart-thermostats',
+                drProgram: 'BGE Connected Rewards',
+                drDetails: '$50 prepaid card for every year you stay enrolled (no separate up-front bonus).',
+                drLink: 'https://bgesmartenergy.com'
+            },
+            'ComEd': {
+                multiplier: 0.14,
+                incentive: '<strong>$75</strong> rebate for purchasing and installing an ENERGY STAR smart thermostat.',
+                incentiveLink: 'https://comedappliancerebates.com/',
+                drProgram: 'ComEd Connected Savings',
+                drDetails: '$25 up-front enrollment reward and $10 each year if you meet participation targets.',
+                drLink: 'https://connectedsavings.com'
+            },
+            'ACE': {
+                multiplier: 0.21,
+                incentive: '<strong>$100</strong> rebate when you install a qualifying smart thermostat (paired with an HVAC system).',
+                incentiveLink: 'https://homeenergysavings.atlanticcityelectric.com/residential/rebates/hvac-efficiency-program/smart-thermostats',
+                drProgram: 'Atlantic City Electric Energy Wise Rewards',
+                drDetails: 'One-time $50 bill credit for allowing the utility to cycle your AC on peak-demand days.',
+                drLink: 'https://atlanticcityelectric.com/rewards'
+            },
+            'JCPL': {
+                multiplier: 0.21,
+                incentive: '<strong>Up to $100</strong> instant rebate on an ENERGY STAR smart thermostat via the JCP&L Marketplace.',
+                incentiveLink: 'https://marketplace.energysavenj.com/smart-thermostats/',
+                drProgram: 'JCP&L Energy Saving Rewards (BYOT thermostat)',
+                drDetails: '$75 virtual Mastercard when you enroll + $25 each summer you remain active.',
+                drLink: 'https://thermostatrewards.com/jcpl'
+            },
+            'PSEG': {
+                multiplier: 0.21,
+                incentive: '<strong>Up to $100</strong> post-purchase rebate for an ENERGY STAR smart thermostat (submit within 120 days).',
+                incentiveLink: 'https://homeenergy.pseg.com/smart-thermostats',
+                drProgram: 'PSEG FlexPower / Rush Hour Rewards',
+                drDetails: '$50 e-gift card at enrollment + $25 each year thereafter for residential customers.',
+                drLink: 'https://flexpower.pseg.com'
+            },
+            'PECO': {
+                multiplier: 0.18,
+                incentive: '<strong>Instant rebate up to $90</strong> off qualifying smart thermostats on the PECO Marketplace (periodic promos rise to $100).',
+                incentiveLink: 'https://www.pecomarketplace.com/peco/smart-thermostats.html',
+                drProgram: 'PECO Smart A/C Saver',
+                drDetails: 'The Smart A/C Saver cycling program was retired in 2020 and PECO has <strong>no active residential VPP or BYOT thermostat offer</strong> as of July 2025.',
+                drLink: ''
+            },
+            'PPL': {
+                multiplier: 0.18,
+                incentive: '<strong>$50</strong> rebate for self- or contractor-installed units, or <strong>$100</strong> when installed by a PPL Trade Ally contractor.',
+                incentiveLink: 'https://www.pplelectricsavings.com/ppl/homeequipment/products/energy-star-certified-smart-thermostats',
+                drProgram: 'PPL Connected Savings Rush Hour Rewards',
+                drDetails: '$25 e-gift card at sign-up and an additional $25 each year you remain enrolled. (Enrollment is currently paused—join the wait-list or check back)',
+                drLink: 'https://connectedsavings.com'
+            }
+        };
+
+        function selectUtility(utility) {
+            selectedUtility = utility;
+            
+            if (utility === 'Other') {
+                showStep('stepOther');
+                return;
+            }
+            
+            multiplier = utilityData[utility].multiplier;
+            drLink = utilityData[utility].drLink;
+            showStep('step2');
+        }
+
+        function calculateIncrease() {
+            monthlyBill = parseFloat(document.getElementById('monthlyBill').value);
+            
+            if (!monthlyBill || monthlyBill <= 0) {
+                alert('Please enter a valid monthly bill amount.');
+                return;
+            }
+            
+            const annualIncrease = monthlyBill * 12 * multiplier;
+            
+            document.getElementById('utilityName').textContent = selectedUtility;
+            document.getElementById('billAmount').textContent = monthlyBill.toFixed(2);
+            document.getElementById('increaseAmount').textContent = annualIncrease.toFixed(2);
+            
+            showStep('step3');
+        }
+
+        function showIncentives() {
+            const data = utilityData[selectedUtility];
+            
+            document.getElementById('utilityName2').textContent = selectedUtility;
+            document.getElementById('incentiveDetails').innerHTML = `
+                <p style="margin-bottom: 15px;">${data.incentive}</p>
+                <p><strong>Learn more:</strong> <a href="${data.incentiveLink}" target="_blank" style="color: #2196f3;">${data.incentiveLink}</a></p>
+            `;
+            
+            // Calculate thermostat savings (10.5% of annual bill)
+            const annualBill = monthlyBill * 12;
+            const thermostatSavings = annualBill * 0.105;
+            
+            document.getElementById('savingsCalculation').innerHTML = `
+                <p style="margin-bottom: 15px;"><strong>Smart Thermostat Energy Savings:</strong> Using a smart thermostat can save you 6-15% on energy costs each year. Based on your monthly bill of ${monthlyBill.toFixed(2)}, this means potential annual savings of <span class="savings-highlight">${thermostatSavings.toFixed(2)}</span>.</p>
+            `;
+            
+            // Show VPP rewards
+            document.getElementById('vppRewards').innerHTML = `
+                <p style="margin-bottom: 15px;"><strong>${data.drProgram}:</strong> ${data.drDetails}</p>
+                <p style="font-size: 0.9em; color: #666;"><em>Note: Rewards are usually per thermostat; multiple devices can multiply payments (subject to each utility's cap).</em></p>
+            `;
+            
+            // Update cumulative savings section
+            updateCumulativeSavings(data, thermostatSavings);
+            
+            showStep('step4');
+        }
+
+        function updateCumulativeSavings(data, thermostatSavings) {
+            // Extract rebate amount (simplified - takes the higher number if range is given)
+            let rebateAmount = 100; // default
+            if (data.incentive.includes('$75')) rebateAmount = 75;
+            if (data.incentive.includes('$50')) rebateAmount = 50;
+            if (data.incentive.includes('$90')) rebateAmount = 90;
+            
+            // Extract VPP rewards (simplified - takes the initial/higher amount)
+            let vppRewards = 0;
+            if (data.drDetails.includes('$75')) vppRewards = 75;
+            else if (data.drDetails.includes('$50')) vppRewards = 50;
+            else if (data.drDetails.includes('$25')) vppRewards = 25;
+            
+            // Calculate total first year savings
+            const totalFirstYear = rebateAmount + thermostatSavings + vppRewards;
+            
+            // Update the cumulative section
+            document.getElementById('rebateAmount').textContent = `${rebateAmount}`;
+            document.getElementById('energySavingsAmount').textContent = `${thermostatSavings.toFixed(0)}`;
+            document.getElementById('vppRewardsAmount').textContent = `${vppRewards}`;
+            document.getElementById('totalSavings').textContent = `${totalFirstYear.toFixed(0)}`;
+        }
+
+        function signUpForDR() {
+            if (drLink) {
+                window.open(drLink, '_blank');
+            } else {
+                alert('No demand response program currently available for your utility.');
+            }
+        }
+
+        function learnMore() {
+            window.open('https://www.energysage.com/energy-storage/what-is-a-virtual-power-plant/', '_blank');
+        }
+
+        function showStep(stepId) {
+            // Hide all steps
+            const steps = document.querySelectorAll('.step');
+            steps.forEach(step => step.classList.remove('active'));
+            
+            // Show selected step
+            document.getElementById(stepId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
