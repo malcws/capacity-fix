@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridSource Energy Pathway</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #1e3c72;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            height: 160px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .input-section h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .address-block {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .city-state-zip {
+            display: flex;
+            gap: 10px;
+        }
+
+        .city-state-zip input {
+            flex: 1;
+        }
+
+        .city-state-zip input:first-child {
+            flex: 2; /* City gets more space */
+        }
+
+        .city-state-zip input:nth-child(2) {
+            flex: 1; /* State gets less space */
+            max-width: 80px;
+        }
+
+        .city-state-zip input:last-child {
+            flex: 1; /* ZIP gets standard space */
+            max-width: 100px;
+        }
+
+        .input-group input,
+        .address-block input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .address-block input:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .button-group {
+            margin-top: 15px;
+        }
+
+        .button-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .utility-buttons, .rate-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .utility-btn, .rate-btn {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            background: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .utility-btn:not(.disabled):hover, .rate-btn:hover {
+            background: #e9ecef;
+            border-color: #1e3c72;
+        }
+
+        .utility-btn.active, .rate-btn.active {
+            background: #1e3c72;
+            color: white;
+            border-color: #1e3c72;
+        }
+
+        .utility-btn.disabled {
+            background: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .rate-buttons {
+            display: none;
+        }
+
+        .rate-buttons.show {
+            display: flex;
+        }
+
+        .results-section {
+            margin-top: 30px;
+        }
+
+        .phase {
+            background: #f8f9fa;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .phase-header {
+            background: #1e3c72;
+            color: white;
+            padding: 15px 25px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .phase-content {
+            padding: 20px 25px;
+        }
+
+        .program {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .program-header {
+            background: #e9ecef;
+            padding: 12px 20px;
+            font-weight: bold;
+            color: #1e3c72;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .program-details {
+            padding: 15px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .detail-value {
+            color: #1e3c72;
+            font-weight: bold;
+        }
+
+        .phase-totals {
+            background: #e8f4f8;
+            border: 2px solid #1e3c72;
+            border-radius: 5px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .total-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .total-label {
+            color: #1e3c72;
+        }
+
+        .total-value {
+            color: #28a745;
+        }
+
+        .currency {
+            color: #28a745;
+        }
+
+        .capital-breakdown {
+            margin-top: 8px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 3px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 2px 0;
+            padding: 1px 0;
+        }
+
+        .breakdown-item:first-child {
+            font-weight: bold;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 4px;
+            margin-bottom: 4px;
+        }
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .error-message {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            background: #218838;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .utility-buttons, .rate-buttons {
+                flex-direction: column;
+            }
+            
+            .program-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .phase-totals {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .city-state-zip {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .city-state-zip input:nth-child(2),
+            .city-state-zip input:last-child {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <svg class="logo" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- GridSource Logo Recreation -->
+                <defs>
+                    <style>
+                        .logo-text { fill: #FFD700; font-family: Arial, sans-serif; font-weight: bold; }
+                        .logo-spiral { fill: none; stroke: #FFD700; stroke-width: 8; }
+                        .logo-center { fill: #FFD700; }
+                    </style>
+                </defs>
+                
+                <!-- Spiral Pattern -->
+                <g transform="translate(100, 60)">
+                    <path class="logo-spiral" d="M 0,0 Q 20,-10 40,0 Q 50,20 40,40 Q 20,50 0,40 Q -10,20 0,0" />
+                    <path class="logo-spiral" d="M 10,10 Q 25,5 35,15 Q 35,25 25,35 Q 15,35 10,25 Q 10,15 15,10" />
+                    <circle class="logo-center" cx="20" cy="20" r="8" />
+                    <text class="logo-center" x="20" y="25" text-anchor="middle" font-size="14" font-weight="bold">G</text>
+                </g>
+                
+                <!-- Company Name -->
+                <text class="logo-text" x="200" y="80" font-size="28">GRIDSOURCE</text>
+            </svg>
+            <h1>Energy Pathway</h1>
+            <p>Comprehensive Energy Solution Analysis</p>
+        </div>
+
+        <div class="content">
+            <div class="input-section">
+                <h2>Project Information</h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="customerName">Customer Name</label>
+                        <input type="text" id="customerName" placeholder="Enter customer name">
+                    </div>
+                    <div class="input-group">
+                        <label for="street">Service Address</label>
+                        <div class="address-block">
+                            <input type="text" id="street" placeholder="Enter street address">
+                            <div class="city-state-zip">
+                                <input type="text" id="city" placeholder="City">
+                                <input type="text" id="state" placeholder="State">
+                                <input type="text" id="zip" placeholder="ZIP">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="peakDemand">Peak Demand (kW)</label>
+                        <input type="number" id="peakDemand" placeholder="Enter peak demand" min="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="monthlyUsage">Monthly Usage (kWh)</label>
+                        <input type="number" id="monthlyUsage" placeholder="Enter monthly kWh" min="0" step="1">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <label>Utility</label>
+                    <div class="utility-buttons">
+                        <button class="utility-btn" data-utility="BGE">BGE</button>
+                        <button class="utility-btn" data-utility="Oncor">Oncor</button>
+                        <button class="utility-btn" data-utility="Centerpoint">Centerpoint</button>
+                        <button class="utility-btn" data-utility="AEP-Texas">AEP-Texas</button>
+                        <button class="utility-btn active" data-utility="PSEG">PSEG</button>
+                        <button class="utility-btn" data-utility="JCPL">JCPL</button>
+                        <button class="utility-btn" data-utility="PECO">PECO</button>
+                        <button class="utility-btn" data-utility="PPL">PPL</button>
+                        <button class="utility-btn" data-utility="ComEd">ComEd</button>
+                        <button class="utility-btn" data-utility="ConEd">ConEd</button>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <label>Rate Class</label>
+                    <div class="rate-buttons">
+                        <!-- Rate class buttons will be dynamically populated based on utility selection -->
+                    </div>
+                </div>
+
+                <button class="calculate-btn" onclick="calculateResults()">Generate Energy Pathway</button>
+            </div>
+
+            <div class="results-section hidden" id="resultsSection">
+                <div class="phase">
+                    <div class="phase-header">Phase 1: Demand Response Only</div>
+                    <div class="phase-content" id="phase1Content"></div>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-header">Phase 2: DR + Batteries</div>
+                    <div class="phase-content" id="phase2Content"></div>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-header">Phase 3: DR + Battery + Onsite Linear Generation (Microgrid)</div>
+                    <div class="phase-content" id="phase3Content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration data - easily replaceable with external table lookup
+        const CONFIG = {
+            demandCharges: {
+                '5CP_PJM_Generation': 11.5118,
+                '5CP_PSEG_Transmxn': 13.7091
+            },
+            capacityRate: 7.8,
+            regulationRate: 22,
+            batteryCost: 405,
+            microgridCost: 1950,
+            federalTaxCredit: 0.30,
+            acceleratedDepreciationMultiplier: 0.45,
+            rateClassDemandCharges: {
+                'GLP': { annual: 4.415, summer: 15.1922 },
+                'LPL-SEC': { annual: 3.7316, summer: 13.0655 },
+                'LPL-HV': { annual: 2.4351, summer: 11.7751 },
+                'HTS-SUB': { annual: 1.6222, summer: 5.864 },
+                'HTS-HV': { annual: 0.6370, summer: 0 }
+            },
+            utilityRateClasses: {
+                'PSEG': ['GLP', 'LPL-SEC', 'LPL-HV', 'HTS-SUB', 'HTS-HV'],
+                'Oncor': ['Secondary ≤ 10 kW', 'Secondary > 10 kW', 'Primary ≤ 10 kW', 'Primary > 10 kW Dist', 'Primary > 10 kW Sub', 'Transmission']
+            }
+        };
+
+        let selectedUtility = '';
+        let selectedRateClass = '';
+
+        // Initialize utility buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const utilityButtons = document.querySelectorAll('.utility-btn');
+            utilityButtons.forEach(btn => {
+                if (btn.dataset.utility !== 'PSEG' && btn.dataset.utility !== 'Oncor') {
+                    btn.classList.add('disabled');
+                }
+                btn.addEventListener('click', function() {
+                    if (!this.classList.contains('disabled')) {
+                        selectUtility(this.dataset.utility);
+                    }
+                });
+            });
+
+            const rateButtons = document.querySelectorAll('.rate-btn');
+            rateButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    selectRateClass(this.dataset.rate);
+                });
+            });
+        });
+
+        function selectUtility(utility) {
+            selectedUtility = utility;
+            selectedRateClass = ''; // Reset rate class when utility changes
+            
+            document.querySelectorAll('.utility-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-utility="${utility}"]`).classList.add('active');
+
+            // Show rate class buttons and populate them based on selected utility
+            const rateButtonsContainer = document.querySelector('.rate-buttons');
+            if (CONFIG.utilityRateClasses[utility]) {
+                rateButtonsContainer.classList.add('show');
+                updateRateClassButtons(utility);
+            } else {
+                rateButtonsContainer.classList.remove('show');
+            }
+        }
+
+        function updateRateClassButtons(utility) {
+            const rateButtonsContainer = document.querySelector('.rate-buttons');
+            const rateClasses = CONFIG.utilityRateClasses[utility];
+            
+            // Clear existing buttons
+            rateButtonsContainer.innerHTML = '';
+            
+            // Create new buttons for the selected utility
+            rateClasses.forEach(rateClass => {
+                const button = document.createElement('button');
+                button.className = 'rate-btn';
+                button.dataset.rate = rateClass;
+                button.textContent = rateClass;
+                button.addEventListener('click', function() {
+                    selectRateClass(this.dataset.rate);
+                });
+                rateButtonsContainer.appendChild(button);
+            });
+        }
+
+        function selectRateClass(rateClass) {
+            selectedRateClass = rateClass;
+            document.querySelectorAll('.rate-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-rate="${rateClass}"]`).classList.add('active');
+        }
+
+        function calculateTaxAdjustedCost(baseCost, peakDemand) {
+            const totalCost = baseCost * peakDemand;
+            const federalTaxCredit = CONFIG.federalTaxCredit;
+            const acceleratedDepreciation = federalTaxCredit * CONFIG.acceleratedDepreciationMultiplier;
+            const taxCreditAmount = totalCost * federalTaxCredit;
+            const acceleratedDepreciationAmount = totalCost * acceleratedDepreciation;
+            const finalCost = totalCost * (1 - federalTaxCredit - acceleratedDepreciation);
+            
+            return {
+                finalCost: finalCost,
+                totalCost: totalCost,
+                taxCreditAmount: taxCreditAmount,
+                acceleratedDepreciationAmount: acceleratedDepreciationAmount
+            };
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function createProgramHTML(program) {
+            let capitalCostHTML = '';
+            
+            if (program.capitalCost !== 0 && program.capitalCostBreakdown) {
+                capitalCostHTML = `
+                    <div class="detail-item">
+                        <div style="width: 100%;">
+                            <div class="capital-breakdown" style="margin-top: 0;">
+                                <div class="breakdown-item" style="font-size: 1em; color: #333; margin-bottom: 8px;">
+                                    <span class="detail-label">Capital Cost:</span>
+                                    <span class="detail-value currency">${formatCurrency(program.capitalCost)}</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span>Total Cost (before incentives):</span>
+                                    <span>${formatCurrency(program.capitalCostBreakdown.totalCost)}</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span>Less: Federal Tax Credit (30%):</span>
+                                    <span>-${formatCurrency(program.capitalCostBreakdown.taxCreditAmount)}</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span>Less: Accelerated Depreciation:</span>
+                                    <span>-${formatCurrency(program.capitalCostBreakdown.acceleratedDepreciationAmount)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                capitalCostHTML = `
+                    <div class="detail-item">
+                        <span class="detail-label">Capital Cost:</span>
+                        <span class="detail-value currency">${formatCurrency(program.capitalCost)}</span>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="program">
+                    <div class="program-header">${program.name}</div>
+                    <div class="program-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Annual Revenue:</span>
+                            <span class="detail-value currency">${formatCurrency(program.annualRevenue)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Deploys/Year:</span>
+                            <span class="detail-value">${program.deploysPerYear}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Hours/Deploy:</span>
+                            <span class="detail-value">${program.hoursPerDeploy}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Non-Perform Penalty:</span>
+                            <span class="detail-value">${program.nonPerformPenalty}</span>
+                        </div>
+                        ${capitalCostHTML}
+                    </div>
+                </div>
+            `;
+        }
+
+        function createPhaseHTML(programs, phaseNumber) {
+            const totalRevenue = programs.reduce((sum, program) => sum + (program.annualRevenue || 0), 0);
+            const totalCapitalCost = programs.reduce((sum, program) => {
+                return sum + (typeof program.capitalCost === 'object' ? program.capitalCost.finalCost : program.capitalCost || 0);
+            }, 0);
+            
+            const programsHTML = programs.map(createProgramHTML).join('');
+            const totalsHTML = `
+                <div class="phase-totals">
+                    <div class="total-item">
+                        <span class="total-label">Phase ${phaseNumber} Total Revenue:</span>
+                        <span class="total-value">${formatCurrency(totalRevenue)}</span>
+                    </div>
+                    <div class="total-item">
+                        <span class="total-label">Phase ${phaseNumber} Total Capital Cost:</span>
+                        <span class="total-value">${formatCurrency(totalCapitalCost)}</span>
+                    </div>
+                </div>
+            `;
+            
+            return programsHTML + totalsHTML;
+        }
+
+        function calculateResults() {
+            // Clear any existing error messages
+            const existingError = document.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            const peakDemand = parseFloat(document.getElementById('peakDemand').value);
+            const monthlyUsage = parseFloat(document.getElementById('monthlyUsage').value);
+
+            if (!peakDemand || !selectedRateClass) {
+                alert('Please fill in all required fields and select a rate class.');
+                return;
+            }
+
+            // Check if monthly usage is too high for peak demand
+            if (monthlyUsage > peakDemand * 730) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = 'Monthly Usage too high for Peak Demand';
+                document.querySelector('.input-section').appendChild(errorDiv);
+                return;
+            }
+
+            // Phase 1: Demand Response Only
+            const phase1Programs = [
+                {
+                    name: '5CP PJM Generation',
+                    annualRevenue: CONFIG.demandCharges['5CP_PJM_Generation'] * 12 * peakDemand,
+                    deploysPerYear: '6-8',
+                    hoursPerDeploy: '2-3',
+                    nonPerformPenalty: 'None',
+                    capitalCost: 0
+                },
+                {
+                    name: '5CP PSEG Transmxn',
+                    annualRevenue: CONFIG.demandCharges['5CP_PSEG_Transmxn'] * 12 * peakDemand,
+                    deploysPerYear: '6-8',
+                    hoursPerDeploy: '2-3',
+                    nonPerformPenalty: 'None',
+                    capitalCost: 0
+                },
+                {
+                    name: 'Capacity DR',
+                    annualRevenue: CONFIG.capacityRate * 12 * peakDemand,
+                    deploysPerYear: '1-3',
+                    hoursPerDeploy: '1-4, max 6',
+                    nonPerformPenalty: 'Cap 150% of program revenue',
+                    capitalCost: 0
+                }
+            ];
+
+            const phase1TotalRevenue = phase1Programs.reduce((sum, program) => sum + program.annualRevenue, 0);
+
+            // Phase 2: DR + Batteries
+            const phase2Programs = [
+                {
+                    name: 'All Above Programs',
+                    annualRevenue: phase1TotalRevenue,
+                    deploysPerYear: 'N/A',
+                    hoursPerDeploy: 'N/A',
+                    nonPerformPenalty: 'N/A',
+                    capitalCost: 0
+                },
+                {
+                    name: 'Regulation',
+                    annualRevenue: CONFIG.regulationRate * 12 * peakDemand,
+                    deploysPerYear: 'N/A',
+                    hoursPerDeploy: 'N/A',
+                    nonPerformPenalty: 'N/A',
+                    capitalCost: calculateTaxAdjustedCost(CONFIG.batteryCost * 3, peakDemand).finalCost,
+                    capitalCostBreakdown: calculateTaxAdjustedCost(CONFIG.batteryCost * 3, peakDemand)
+                }
+            ];
+
+            const phase2TotalRevenue = phase2Programs.reduce((sum, program) => sum + program.annualRevenue, 0);
+
+            // Phase 3: DR + Battery + Onsite Linear Generation
+            const rateClassData = CONFIG.rateClassDemandCharges[selectedRateClass];
+            const phase3Programs = [
+                {
+                    name: 'All Above Programs',
+                    annualRevenue: phase2TotalRevenue,
+                    deploysPerYear: 'N/A',
+                    hoursPerDeploy: 'N/A',
+                    nonPerformPenalty: 'N/A',
+                    capitalCost: 0
+                },
+                {
+                    name: 'NCP Annual Demand (50% reduction)',
+                    annualRevenue: rateClassData.annual * 12 * peakDemand,
+                    deploysPerYear: 'N/A',
+                    hoursPerDeploy: 'N/A',
+                    nonPerformPenalty: 'N/A',
+                    capitalCost: calculateTaxAdjustedCost(CONFIG.microgridCost, peakDemand).finalCost,
+                    capitalCostBreakdown: calculateTaxAdjustedCost(CONFIG.microgridCost, peakDemand)
+                },
+                {
+                    name: 'NCP Summer Demand (8a-10p M-F 100% reduction)',
+                    annualRevenue: rateClassData.summer * 4 * peakDemand,
+                    deploysPerYear: 'N/A',
+                    hoursPerDeploy: 'N/A',
+                    nonPerformPenalty: 'N/A',
+                    capitalCost: 0
+                }
+            ];
+
+            // Display results
+            document.getElementById('phase1Content').innerHTML = createPhaseHTML(phase1Programs, 1);
+            document.getElementById('phase2Content').innerHTML = createPhaseHTML(phase2Programs, 2);
+            document.getElementById('phase3Content').innerHTML = createPhaseHTML(phase3Programs, 3);
+
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
